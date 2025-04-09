@@ -27,12 +27,23 @@ int setup(char *ip, char *port, int mode, int *descriptor) {
 
   hints.ai_family = AF_UNSPEC;
   hints.ai_socktype = SOCK_STREAM;
+  if (mode == 1) {
+    hints.ai_flags = AI_PASSIVE;
 
-  rc = getaddrinfo(ip, port, &hints, &res);
-  if (rc == -1) {
-    printf("Could not get address info on %s:%s\n", ip, port);
+    rc = getaddrinfo(NULL, port, &hints, &res);
+    if (rc == -1) {
+      printf("Could not get address info on %s:%s\n", ip, port);
 
-    return -1;
+      return -1;
+    }
+  } else {
+
+    rc = getaddrinfo(ip, port, &hints, &res);
+    if (rc == -1) {
+      printf("Could not get address info on %s:%s\n", ip, port);
+
+      return -1;
+    }
   }
 
   sd = socket(res->ai_addr->sa_family, SOCK_STREAM, IPPROTO_TCP);
@@ -83,8 +94,8 @@ int setup(char *ip, char *port, int mode, int *descriptor) {
 
 int main(int argc, char *argv[]) {
   int mode, sd, rc;
-  char ip[13];
-  char port[4];
+  char ip[14];
+  char port[5];
 
   printf("Do you want to: \n");
   printf("0 - Connect, 1 - Listen, Other - Exit\n");
@@ -113,7 +124,7 @@ int main(int argc, char *argv[]) {
       return -1;
     }
 
-    rc = setup("192.168.1.101", "4444", 1, &sd);
+    rc = setup("", "4444", 1, &sd);
     if (rc == -1) {
       printf("Could not setup connection.\n");
 
@@ -141,6 +152,8 @@ int main(int argc, char *argv[]) {
     printf("PORT: ");
     scanf("%s", port);
 
+    printf("%s:%s", ip, port);
+
     rc = setup(ip, port, 0, &sd);
     if (rc == -1) {
       printf("Could not setup connection.\n");
@@ -148,7 +161,7 @@ int main(int argc, char *argv[]) {
       return -1;
     }
 
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 10; i++) {
       struct input_event event;
 
       rc = recv(sd, &event, sizeof(event), 0);
