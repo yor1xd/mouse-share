@@ -83,8 +83,8 @@ int setup(char *ip, char *port, int mode, int *descriptor) {
 
 int main(int argc, char *argv[]) {
   int mode, sd, rc;
-  char *ip;
-  char *port;
+  char ip[13];
+  char port[4];
 
   printf("Do you want to: \n");
   printf("0 - Connect, 1 - Listen, Other - Exit\n");
