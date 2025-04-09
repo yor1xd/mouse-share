@@ -136,10 +136,10 @@ int main(int argc, char *argv[]) {
       struct input_event event;
       libevdev_next_event(dev, LIBEVDEV_READ_FLAG_NORMAL, &event);
 
-      printf("Buffer size: %lu bytes.\n", sizeof(event));
+      printf("Event: %s %s %d\n", libevdev_event_type_get_name(event.type),
+             libevdev_event_code_get_name(event.type, event.code), event.value);
 
       rc = send(sd, &event, sizeof(event), 0);
-      printf("%d bytes were sent.\n", rc);
 
       usleep(500000);
     }
@@ -151,8 +151,6 @@ int main(int argc, char *argv[]) {
 
     printf("PORT: ");
     scanf("%s", port);
-
-    printf("%s:%s", ip, port);
 
     rc = setup(ip, port, 0, &sd);
     if (rc == -1) {
@@ -169,7 +167,7 @@ int main(int argc, char *argv[]) {
         printf("Could not receive buffer.\n");
       }
 
-      printf("Event: %s %s %d", libevdev_event_type_get_name(event.type),
+      printf("Event: %s %s %d\n", libevdev_event_type_get_name(event.type),
              libevdev_event_code_get_name(event.type, event.code), event.value);
     }
   }
